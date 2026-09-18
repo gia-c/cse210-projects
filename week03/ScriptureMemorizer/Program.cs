@@ -4,31 +4,113 @@ class Program
 {
     static void Main(string[] args)
     {
-        Reference reference = new Reference("Proverbs", 3, 5, 6);
+        // Read the scripture library
+        string[] lines = File.ReadAllLines("scriptures.txt");
 
-        string text = "Trust in the Lord with all thine heart and lean not unto thine own understanding";
+        Random random = new Random();
 
-        Scripture scripture = new Scripture(reference, text);
+        bool quit = false;
+        List<int> usedScriptures = new List<int>();
 
-        while (!scripture.IsCompletelyHidden())
+        while (!quit)
         {
-            Console.Clear();
+            // Choose a random scripture that has not been used
+            int index;
 
-            Console.WriteLine(scripture.GetDisplayText());
-            Console.WriteLine();
-            Console.Write("Press Enter to hide words or type 'quit' to exit: ");
+            do
+            {
+                index = random.Next(lines.Length);
+            }
+            while (usedScriptures.Contains(index));
 
-            string input = Console.ReadLine();
+            usedScriptures.Add(index);
 
-            if (input.ToLower() == "quit")
+            // Separate the scripture information
+            string[] parts = lines[index].Split('|');
+
+            string book = parts[0];
+            int chapter = int.Parse(parts[1]);
+            int startVerse = int.Parse(parts[2]);
+            int endVerse = int.Parse(parts[3]);
+            string text = parts[4];
+
+            // Create the scripture
+            Reference reference = new Reference(
+                book,
+                chapter,
+                startVerse,
+                endVerse);
+
+            Scripture scripture = new Scripture(reference, text);
+
+            // Practice the scripture
+            while (!scripture.IsCompletelyHidden())
+            {
+                Console.Clear();
+
+                Console.WriteLine(scripture.GetDisplayText());
+                Console.WriteLine();
+                Console.Write("Press Enter to hide words or type 'quit' to exit: ");
+
+                string input = Console.ReadLine();
+
+                if (input.ToLower() == "quit")
+                {
+                    quit = true;
+                    break;
+                }
+
+                scripture.HideRandomWords(3);
+            }
+
+            if (quit)
             {
                 break;
             }
 
-            scripture.HideRandomWords(3);
-        }
+            // Scripture is completely hidden
+            Console.Clear();
+            Console.WriteLine(scripture.GetDisplayText());
+            Console.WriteLine();
 
-        Console.Clear();
-        Console.WriteLine(scripture.GetDisplayText());
+            // Check if all scriptures have been used
+            if (usedScriptures.Count == lines.Length)
+            {
+                Console.WriteLine("You have completed all the scriptures!");
+                Console.WriteLine();
+                Console.Write("Would you like to restart the scripture library? (yes/no): ");
+
+                string restart = Console.ReadLine();
+
+                if (restart.ToLower() == "yes")
+                {
+                    usedScriptures.Clear();
+                }
+                else
+                {
+                    quit = true;
+                }
+            }
+            else
+            {
+                // Ask what to do after completing a scripture
+                Console.WriteLine("1. Continue with another scripture");
+                Console.WriteLine("2. Quit");
+                Console.Write("Choose an option: ");
+
+                string option = Console.ReadLine();
+
+                while (option != "1" && option != "2")
+                {
+                    Console.Write("Please enter 1 to continue or 2 to quit: ");
+                    option = Console.ReadLine();
+                }
+
+                if (option == "2")
+                {
+                    quit = true;
+                }
+            }
+        }
     }
 }
