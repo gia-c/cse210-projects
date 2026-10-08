@@ -1,0 +1,4 @@
+3300
+SimpleGoal,Give a talk,Give a talk in sacrament meeting,100,True
+EternalGoal,Pray,Pray with intention everyday,500
+ChecklistGoal,Attend church,Attend church every sunday ,500,4,700,4
